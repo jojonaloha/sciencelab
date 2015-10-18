@@ -4,9 +4,21 @@
  * Science Lab Login
  */
 
+$blockList = array(
+  'michael',
+);
+
 if (isset($_POST['name'])) {
-  $name = $_POST['name'];
-  `say -v Zarvox -o "audio/$name.mp4" "Welcome $name. Access granted."`;
+  $name = strtolower(preg_replace('/[^a-z0-9\- ]/i', '', $_POST['name']));
+  if (in_array($name, $blockList)) {
+    $message = "Sorry $name. Access denied.";
+  }
+  else {
+    $message = "Welcome $name. Access granted.";
+  }
+  $filename = escapeshellarg("audio/$name.mp4");
+  $message = escapeshellarg($message);
+  `say -v Zarvox -o $filename $message`;
 }
 
 ?>
@@ -115,7 +127,7 @@ if (isset($_POST['name'])) {
     <?php if (!empty($name)) { ?>
       // Create an audio object
       var audio = new Audio();
-      audio.src = 'audio/<?php echo $name; ?>.mp4';
+      audio.src = 'audio/<?php echo addslashes($name); ?>.mp4';
       audio.controls = false;
       audio.loop = false;
       audio.autoplay = false;
